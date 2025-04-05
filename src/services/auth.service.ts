@@ -1,5 +1,6 @@
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiErrors } from "../errors/api.errors";
+import { IAuth } from "../interfaces/auth.interface";
 import { ITokenPair } from "../interfaces/token.interface";
 import { IUser, IUserCreateDTO } from "../interfaces/user.interface";
 import { tokenRepository } from "../repositories/token.repository";
@@ -23,8 +24,16 @@ class AuthService {
     return { user: newUser, tokens };
   }
 
-  public async signIn(dto: any): Promise<{ user: IUser; tokens: ITokenPair }> {
+  public async signIn(
+    dto: IAuth,
+  ): Promise<{ user: IUser; tokens: ITokenPair }> {
     const user = await userRepository.getByEmail(dto.email);
+    if (!user) {
+      throw new ApiErrors(
+        "Email or password invalid",
+        StatusCodesEnum.UNAUTHORIZED,
+      );
+    }
     const isValidPassword = await passwordService.comparePassword(
       dto.password,
       user.password,
