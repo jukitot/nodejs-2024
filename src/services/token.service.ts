@@ -1,7 +1,9 @@
 import jwt from "jsonwebtoken";
 
 import { config } from "../configs/config";
+import { ActionTokenTypeEnum } from "../enums/action-token-type.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
+import { TokenTypeEnum } from "../enums/token-type.enum";
 import { ApiErrors } from "../errors/api.errors";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import { tokenRepository } from "../repositories/token.repository";
@@ -21,15 +23,24 @@ class TokenService {
     };
   }
 
-  public verifyToken(token: string, type: "access" | "refresh"): ITokenPayload {
+  public verifyToken(
+    token: string,
+    type: TokenTypeEnum | ActionTokenTypeEnum,
+  ): ITokenPayload {
     try {
       let secret: string;
       switch (type) {
-        case "access":
+        case TokenTypeEnum.ACCESS:
           secret = config.JWT_ACCESS_SECRET;
           break;
-        case "refresh":
+        case TokenTypeEnum.REFRESH:
           secret = config.JWT_REFRESH_SECRET;
+          break;
+        case ActionTokenTypeEnum.ACTIVATE:
+          secret = config.JWT_ACTIVATE_SECRET;
+          break;
+        case ActionTokenTypeEnum.RECOVERY:
+          secret = config.JWT_RECOVERY_SECRET;
           break;
         default:
           throw new ApiErrors(
@@ -44,9 +55,31 @@ class TokenService {
     }
   }
 
+  public generateActionToken(
+    payload: ITokenPayload,
+    type: ActionTokenTypeEnum,
+  ): string {
+    let secret: string;
+    let expiresIn: any;
+
+    switch (type) {
+      case ActionTokenTypeEnum.ACTIVATE:
+        secret = config.JWT_ACTIVATE_SECRET;
+        expiresIn = config.JWT_ACTIVATE_LIFETIME;
+        break;
+      case ActionTokenTypeEnum.RECOVERY:
+        secret = config.JWT_RECOVERY_SECRET;
+        expiresIn = config.JWT_RECOVERY_LIFETIME;
+        break;
+      default:
+        throw new ApiErrors("Invalid action token type", 400);
+    }
+    return jwt.sign(payload, secret, { expiresIn });
+  }
+
   public async isTokenExists(
     token: string,
-    type: "accessToken" | "refreshToken",
+    type: TokenTypeEnum,
   ): Promise<boolean> {
     const iTokenPromise = await tokenRepository.findByParams({ [type]: token });
     return !!iTokenPromise;
