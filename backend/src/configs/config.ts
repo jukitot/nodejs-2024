@@ -1,7 +1,3 @@
-
-
-
-
 interface IConfig {
   PORT: string;
   MONGO_URI: string;
