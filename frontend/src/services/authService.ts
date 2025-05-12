@@ -29,8 +29,8 @@ const authService = {
     localStorage.setItem(_refreshToken, refreshToken)
 },
   deleteTokens():void{
-    localStorage.getItem(_accessToken)
-    localStorage.getItem(_refreshToken)
+    localStorage.removeItem(_accessToken)
+    localStorage.removeItem(_refreshToken)
   },
   me():IRes<IUser>{
     return apiService.get(urls.auth.me)
