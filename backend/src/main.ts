@@ -6,11 +6,18 @@ import * as mongoose from "mongoose";
 import { config } from "./configs/config";
 import { ApiErrors } from "./errors/api.errors";
 import { apiRouter } from "./routers/api.router";
+import path from "node:path";
+
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", apiRouter);
+app.use("/media", express.static(path.join(process.cwd(), "upload")));
+app.use(cors({ origin:[
+  'http://localhost:3000',
+  ]}))
 
 app.use(
   "*",
@@ -28,9 +35,10 @@ process.on("uncaughtException", (err) => {
 
 const dbConnection = async () => {
   let dbCon = false;
+
   while (!dbCon) {
     try {
-      console.log("Connecting to DB...");
+      console.log("Connecting to DB...", config.MONGO_URI);
       await mongoose.connect(config.MONGO_URI);
       dbCon = true;
       console.log("Database available!!!");

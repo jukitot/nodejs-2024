@@ -2,7 +2,6 @@ import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IAuth } from "../interfaces/authInterface";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import { useDispatch } from "react-redux";
 import { authActions } from "../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 

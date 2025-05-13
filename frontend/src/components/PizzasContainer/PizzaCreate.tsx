@@ -1,6 +1,5 @@
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import pizza from "./Pizza";
 import { IPizza } from "../../interfaces/pizzaInterface";
 import { useAppDispatch } from "../../hooks/reduxHooks";
 import { pizzaActions } from "../../redux/slices/pizzaSlice";
