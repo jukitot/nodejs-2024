@@ -85,7 +85,6 @@ class AuthController {
     next: NextFunction,
   ) {
     try {
-      console.log(req.params, "!!!!!!!!!!!");
       const { token } = req.params as { token: string };
       const { password } = req.body;
       const user = await authService.recoverPassword(token, password);
