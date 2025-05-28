@@ -1,11 +1,18 @@
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiErrors } from "../errors/api.errors";
-import { IUser, IUserCreateDTO } from "../interfaces/user.interface";
+import { IPaginatedResponse } from "../interfaces/paginated-response.interface";
+import {
+  IUser,
+  IUserCreateDTO,
+  IUserQuery,
+} from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
-  public getAll(): Promise<IUser[]> {
-    return userRepository.getAll();
+  public async getAll(query: IUserQuery): Promise<IPaginatedResponse<IUser>> {
+    const [data, totalItems] = await userRepository.getAll(query);
+
+    return {};
   }
   public create(user: IUserCreateDTO): Promise<IUser> {
     return userRepository.create(user);
